@@ -1,10 +1,16 @@
 // index.js
 const express = require('express');
 
+// Load .env in development (Vercel handles env vars automatically)
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
+
 const app = express();
 
-// (optional) env port, default 3000
+// Use env vars with defaults
 const PORT = process.env.PORT || 3000;
+const SITE_NAME = process.env.SITE_NAME || 'My Express App';
 
 // Basic middleware (logging + JSON body support if you later add APIs)
 app.use(express.json());
@@ -20,14 +26,14 @@ app.get('/', (_req, res) => {
     <html>
       <head>
         <meta charset="utf-8" />
-        <title>Home</title>
+        <title>Home - ${SITE_NAME}</title>
         <style>
           body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 2rem; }
           a { margin-right: 1rem; }
         </style>
       </head>
       <body>
-        <h1>Welcome to the Home Page</h1>
+        <h1>Welcome to ${SITE_NAME}</h1>
         <p>This is a simple Node.js server using Express.</p>
         <nav>
           <a href="/">Home</a>
@@ -46,7 +52,7 @@ app.get('/about', (_req, res) => {
     <html>
       <head>
         <meta charset="utf-8" />
-        <title>About</title>
+        <title>About - ${SITE_NAME}</title>
         <style>
           body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 2rem; }
           a { margin-right: 1rem; }
@@ -72,7 +78,7 @@ app.get('/contact', (_req, res) => {
     <html>
       <head>
         <meta charset="utf-8" />
-        <title>Contact</title>
+        <title>Contact - ${SITE_NAME}</title>
         <style>
           body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 2rem; }
           label { display:block; margin-top: .5rem; }
@@ -126,7 +132,6 @@ app.post('/contact', (req, res) => {
   if (!name || !email || !message) {
     return res.status(400).json({ message: 'name, email, and message are required' });
   }
-  // TODO: send email, save to DB, etc.
   return res.status(200).json({ message: 'Thanks! We received your message.' });
 });
 
@@ -135,7 +140,7 @@ app.use((req, res) => {
   res.status(404).type('text').send('404 Not Found');
 });
 
-// Start server
+// Start server (Vercel will handle port automatically)
 app.listen(PORT, () => {
-  console.log(`Server running: http://localhost:${PORT}`);
+  console.log(`Starting ${SITE_NAME} on http://localhost:${PORT}`);
 });
