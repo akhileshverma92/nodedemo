@@ -1,5 +1,5 @@
-// index.js
 const express = require('express');
+const fetch = require('node-fetch');
 
 // Load .env in development (Vercel handles env vars automatically)
 if (process.env.NODE_ENV !== 'production') {
@@ -30,6 +30,10 @@ app.get('/', (_req, res) => {
         <style>
           body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 2rem; }
           a { margin-right: 1rem; }
+          form { margin-top: 1rem; }
+          input { padding: .5rem; width: 250px; }
+          button { padding: .5rem .75rem; cursor: pointer; }
+          pre { background:#f4f4f4; padding:1rem; margin-top:1rem; max-width:600px; overflow:auto; }
         </style>
       </head>
       <body>
@@ -40,6 +44,30 @@ app.get('/', (_req, res) => {
           <a href="/about">About</a>
           <a href="/contact">Contact</a>
         </nav>
+
+        <h2>Find GitHub Repositories by Username</h2>
+        <form id="gitForm">
+          <input name="username" placeholder="Enter GitHub username" required />
+          <button type="submit">Fetch Repos</button>
+        </form>
+        <pre id="gitResult"></pre>
+
+        <script>
+          const gitForm = document.getElementById('gitForm');
+          const gitResult = document.getElementById('gitResult');
+          gitForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = new FormData(gitForm).get('username');
+            gitResult.textContent = 'Loading...';
+            try {
+              const res = await fetch('/github/' + encodeURIComponent(username));
+              const data = await res.json();
+              gitResult.textContent = JSON.stringify(data, null, 2);
+            } catch (err) {
+              gitResult.textContent = 'Error fetching data';
+            }
+          });
+        </script>
       </body>
     </html>
   `);
@@ -126,7 +154,7 @@ app.get('/contact', (_req, res) => {
   `);
 });
 
-// Contact (POST) – just echoes JSON (you can wire this to email/db later)
+// Contact (POST)
 app.post('/contact', (req, res) => {
   const { name, email, message } = req.body || {};
   if (!name || !email || !message) {
@@ -135,12 +163,34 @@ app.post('/contact', (req, res) => {
   return res.status(200).json({ message: 'Thanks! We received your message.' });
 });
 
+// GitHub repos API route
+app.get('/github/:username', async (req, res) => {
+  const { username } = req.params;
+  try {
+    const response = await fetch(`https://api.github.com/users/${encodeURIComponent(username)}/repos`);
+    if (!response.ok) {
+      return res.status(response.status).json({ error: `GitHub API error: ${response.statusText}` });
+    }
+    const repos = await response.json();
+    const result = repos.map(repo => ({
+      name: repo.name,
+      url: repo.html_url,
+      description: repo.description,
+      stars: repo.stargazers_count
+    }));
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch GitHub repos' });
+  }
+});
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).type('text').send('404 Not Found');
 });
 
-// Start server (Vercel will handle port automatically)
+// Start server
 app.listen(PORT, () => {
   console.log(`Starting ${SITE_NAME} on http://localhost:${PORT}`);
 });
