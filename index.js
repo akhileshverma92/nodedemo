@@ -190,7 +190,10 @@ app.use((req, res) => {
   res.status(404).type('text').send('404 Not Found');
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Starting ${SITE_NAME} on http://localhost:${PORT}`);
-});
+// // Start server
+// app.listen(PORT, () => {
+//   console.log(`Starting ${SITE_NAME} on http://localhost:${PORT}`);
+// });
+
+const serverless = require('serverless-http');
+module.exports = serverless(app);
