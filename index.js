@@ -9,7 +9,7 @@ if (process.env.NODE_ENV !== 'production') {
 const app = express();
 
 // Use env vars with defaults
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 const SITE_NAME = process.env.SITE_NAME || 'My Express App';
 
 // Basic middleware (logging + JSON body support if you later add APIs)
