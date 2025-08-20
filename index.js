@@ -44,7 +44,6 @@ app.get('/', (_req, res) => {
     </html>
   `);
 });
-
 // About
 app.get('/about', (_req, res) => {
   res.type('html').send(`
@@ -56,15 +55,24 @@ app.get('/about', (_req, res) => {
         <style>
           body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 2rem; }
           a { margin-right: 1rem; }
+          .about-me { margin-top: 1rem; padding: 1rem; background: #f8f8f8; border-radius: 8px; }
         </style>
       </head>
       <body>
         <h1>About Us</h1>
         <p>We build simple demos with Node.js and Express.</p>
-        <nav>
+
+        <div class="about-me">
+          <h2>About Me</h2>
+          <p>Hello! I'm Akhilesh , a developer who loves building clean and simple apps with JavaScript and Node.js.</p>
+          <p>I enjoy learning new frameworks, solving tricky bugs, and helping others understand code better.</p>
+        </div>
+
+        <nav style="margin-top: 1rem;">
           <a href="/">Home</a>
           <a href="/about">About</a>
           <a href="/contact">Contact</a>
+           <a href="https://github.com/akhileshverma92/nodedemo" target="_blank">Github</a>
         </nav>
       </body>
     </html>
